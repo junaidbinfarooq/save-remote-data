@@ -32,7 +32,7 @@ class User
     private Collection $banks;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Address::class, orphanRemoval: true)]
-    private Collection $Addresses;
+    private Collection $addresses;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Post::class, orphanRemoval: true)]
     private Collection $posts;
@@ -43,7 +43,7 @@ class User
     public function __construct()
     {
         $this->banks = new ArrayCollection();
-        $this->Addresses = new ArrayCollection();
+        $this->addresses = new ArrayCollection();
         $this->posts = new ArrayCollection();
     }
 
@@ -135,29 +135,24 @@ class User
      */
     public function getAddresses(): Collection
     {
-        return $this->Addresses;
+        return $this->addresses;
     }
 
-    public function addAddress(Address $address): self
+    public function addAddress(Address $address): void
     {
-        if (!$this->Addresses->contains($address)) {
-            $this->Addresses->add($address);
+        if (!$this->addresses->contains($address)) {
+            $this->addresses->add($address);
             $address->setUser($this);
         }
-
-        return $this;
     }
 
-    public function removeAddress(Address $address): self
+    public function removeAddress(Address $address): void
     {
-        if ($this->Addresses->removeElement($address)) {
-            // set the owning side to null (unless already changed)
+        if ($this->addresses->removeElement($address)) {
             if ($address->getUser() === $this) {
                 $address->setUser(null);
             }
         }
-
-        return $this;
     }
 
     /**
