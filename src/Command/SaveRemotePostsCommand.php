@@ -4,6 +4,7 @@ namespace App\Command;
 
 use App\Entity\User;
 use App\Service\FetchRemoteData;
+use App\Service\SavePosts;
 use App\Service\SaveUsers;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -20,13 +21,13 @@ use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 #[AsCommand(
-    name: 'save-remote-users',
-    description: 'Fetches users from a remote api and saves them to a database',
+    name: 'save-remote-posts',
+    description: 'Fetches user posts from a remote api and saves them to a database',
 )]
-class SaveRemoteUsersCommand extends Command
+class SaveRemotePostsCommand extends Command
 {
     public function __construct(
-        private readonly SaveUsers $saveUsers,
+        private readonly SavePosts $savePosts,
     )
     {
         parent::__construct();
@@ -41,7 +42,7 @@ class SaveRemoteUsersCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         try {
-            $numberOfUsersInserted = ($this->saveUsers)();
+            $numberOfPostsInserted = ($this->savePosts)();
         } catch (
             ClientExceptionInterface |
             DecodingExceptionInterface |
@@ -53,7 +54,7 @@ class SaveRemoteUsersCommand extends Command
             return Command::FAILURE;
         }
 
-        $io->success(\sprintf('%d users imported into the database successfully!', $numberOfUsersInserted));
+        $io->success(\sprintf('%d posts imported into the database successfully!', $numberOfPostsInserted));
 
         return Command::SUCCESS;
     }

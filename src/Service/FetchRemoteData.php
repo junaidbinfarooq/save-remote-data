@@ -9,9 +9,13 @@ use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-final class FetchUsers
+final class FetchRemoteData
 {
-    public function __construct(private HttpClientInterface $httpClient)
+    public const BASE_URL = 'https://dummyjson.com/';
+    public const RESOURCE_USERS = 'users';
+    public const RESOURCE_POSTS = 'posts';
+
+    public function __construct(private readonly HttpClientInterface $httpClient)
     {
     }
 
@@ -22,13 +26,13 @@ final class FetchUsers
      * @throws TransportExceptionInterface
      * @throws ServerExceptionInterface
      */
-    public function __invoke(): array
+    public function __invoke(string $resource): array
     {
         $response = $this->httpClient->request(
             'GET',
-            'https://dummyjson.com/users'
+            self::BASE_URL.$resource,
         );
 
-        return $response->toArray()['users'] ?? [];
+        return $response->toArray()[$resource] ?? [];
     }
 }

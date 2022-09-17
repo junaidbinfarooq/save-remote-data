@@ -19,11 +19,11 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 final class SaveUsers
 {
     public function __construct(
-        private readonly FetchUsers $fetchUsers,
-        private readonly UserRepository $userRepository,
+        private readonly FetchRemoteData   $fetchRemoteData,
+        private readonly UserRepository    $userRepository,
         private readonly AddressRepository $addressRepository,
-        private readonly BankRepository $bankRepository,
-        private readonly HairRepository $hairRepository,
+        private readonly BankRepository    $bankRepository,
+        private readonly HairRepository    $hairRepository,
     )
     {
     }
@@ -35,9 +35,9 @@ final class SaveUsers
      * @throws DecodingExceptionInterface
      * @throws ClientExceptionInterface
      */
-    public function __invoke(): void
+    public function __invoke(): int
     {
-        $users = ($this->fetchUsers)();
+        $users = ($this->fetchRemoteData)(FetchRemoteData::RESOURCE_USERS);
 
         foreach ($users as $user) {
             if (
@@ -96,5 +96,7 @@ final class SaveUsers
         }
 
         $this->userRepository->save();
+
+        return \count($users);
     }
 }

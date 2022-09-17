@@ -37,7 +37,7 @@ class Post
     {
     }
 
-    public function setUser(?User $user): self
+    public function setUser(?User $user): void
     {
         $this->user = $user;
     }

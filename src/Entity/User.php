@@ -81,6 +81,7 @@ class User
     {
         if (!$this->posts->contains($post)) {
             $this->posts->add($post);
+
             $post->setUser($this);
         }
 
