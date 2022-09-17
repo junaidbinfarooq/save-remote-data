@@ -67,7 +67,8 @@ final class Version20220916151617 extends AbstractMigration
                     body LONGTEXT NOT NULL,
                     reactions INT NULL DEFAULT 0,
                     INDEX IDX_5A8A6C8DA76ED395 (user_id),
-                    PRIMARY KEY(id)
+                    PRIMARY KEY(id),
+                    UNIQUE(title)
                 ) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB;
             SQL
         );

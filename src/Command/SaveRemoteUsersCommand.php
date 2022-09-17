@@ -53,7 +53,13 @@ class SaveRemoteUsersCommand extends Command
             return Command::FAILURE;
         }
 
-        $io->success(\sprintf('%d users imported into the database successfully!', $numberOfUsersInserted));
+        if (0 === $numberOfUsersInserted) {
+            $io->note('No user was imported!');
+        } else {
+            $io->success(
+                \sprintf('%d users imported into the database successfully!', $numberOfUsersInserted)
+            );
+        }
 
         return Command::SUCCESS;
     }

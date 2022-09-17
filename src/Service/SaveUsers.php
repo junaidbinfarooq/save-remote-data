@@ -37,7 +37,8 @@ final class SaveUsers
      */
     public function __invoke(): int
     {
-        $users = ($this->fetchRemoteData)(FetchRemoteData::RESOURCE_USERS);
+        $users = ($this->fetchRemoteData)(FetchRemoteData::RESOURCE_USERS)['users'];
+        $numberOfUsersInserted = 0;
 
         foreach ($users as $user) {
             if (
@@ -48,6 +49,8 @@ final class SaveUsers
             ) {
                 continue;
             }
+
+            $numberOfUsersInserted++;
 
             $addressEntity = new Address(
                 address: $user['address']['address'] ?? '',
@@ -97,6 +100,6 @@ final class SaveUsers
 
         $this->userRepository->save();
 
-        return \count($users);
+        return $numberOfUsersInserted;
     }
 }

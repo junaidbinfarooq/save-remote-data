@@ -35,6 +35,13 @@ class SaveRemotePostsCommand extends Command
 
     protected function configure(): void
     {
+        $this
+            ->addArgument(
+                'user-id',
+                InputArgument::OPTIONAL,
+                'Posts belonging to a particular user',
+            )
+        ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -42,7 +49,7 @@ class SaveRemotePostsCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         try {
-            $numberOfPostsInserted = ($this->savePosts)();
+            $numberOfPostsInserted = ($this->savePosts)($input->getArgument('user-id'));
         } catch (
             ClientExceptionInterface |
             DecodingExceptionInterface |
@@ -54,7 +61,13 @@ class SaveRemotePostsCommand extends Command
             return Command::FAILURE;
         }
 
-        $io->success(\sprintf('%d posts imported into the database successfully!', $numberOfPostsInserted));
+        if (0 === $numberOfPostsInserted) {
+            $io->note('No post was imported!');
+        } else {
+            $io->success(
+                \sprintf('%d posts imported into the database successfully!', $numberOfPostsInserted)
+            );
+        }
 
         return Command::SUCCESS;
     }

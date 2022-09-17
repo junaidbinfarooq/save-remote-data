@@ -12,8 +12,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 final class FetchRemoteData
 {
     public const BASE_URL = 'https://dummyjson.com/';
-    public const RESOURCE_USERS = 'users';
-    public const RESOURCE_POSTS = 'posts';
+    public const RESOURCE_USERS = 'users/';
+    public const RESOURCE_POSTS = 'posts/';
 
     public function __construct(private readonly HttpClientInterface $httpClient)
     {
@@ -33,6 +33,6 @@ final class FetchRemoteData
             self::BASE_URL.$resource,
         );
 
-        return $response->toArray()[$resource] ?? [];
+        return $response->toArray();
     }
 }

@@ -28,9 +28,18 @@ final class SavePosts
      * @throws DecodingExceptionInterface
      * @throws ClientExceptionInterface
      */
-    public function __invoke(): int
+    public function __invoke(?int $userId = null): int
     {
-        $posts = ($this->fetchRemoteData)(FetchRemoteData::RESOURCE_POSTS);
+        $userEntity = null !== $userId ? $this->userRepository->find($userId) : null;
+
+        if (null !== $userId && null === $userEntity) {
+            throw new \InvalidArgumentException(\sprintf('User with id %d was not found in the database!', $userId));
+        }
+
+        $resourceToFetch = FetchRemoteData::RESOURCE_POSTS.(null !== $userId ? 'user/'.$userId : '');
+
+        $posts = ($this->fetchRemoteData)($resourceToFetch)['posts'] ?? [];
+        $numberOfPostsInserted = 0;
 
         foreach ($posts as $post) {
             if (
@@ -40,11 +49,13 @@ final class SavePosts
                 continue;
             }
 
-            $userEntity = $this->userRepository->find($post['userId']);
+            $userEntity = null === $userId ? $this->userRepository->find($post['userId']) : $userEntity;
 
             if (null === $userEntity) {
                 continue;
             }
+
+            $numberOfPostsInserted++;
 
             $postEntity = new Post(
                 title: $post['title'] ?? '',
@@ -61,6 +72,6 @@ final class SavePosts
 
         $this->userRepository->save();
 
-        return \count($posts);
+        return $numberOfPostsInserted;
     }
 }
