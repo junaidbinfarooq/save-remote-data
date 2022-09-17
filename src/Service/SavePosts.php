@@ -5,11 +5,14 @@ namespace App\Service;
 use App\Entity\Post;
 use App\Repository\PostRepository;
 use App\Repository\UserRepository;
+use InvalidArgumentException;
+use function sprintf;
+use function strlen;
 
 final class SavePosts
 {
     public function __construct(
-        private readonly FetchRemoteData $fetchRemoteData,
+        private readonly RemoteApi $remoteApi,
         private readonly UserRepository  $userRepository,
         private readonly PostRepository  $postRepository,
     )
@@ -21,18 +24,18 @@ final class SavePosts
         $userEntity = null !== $userId ? $this->userRepository->find($userId) : null;
 
         if (null !== $userId && null === $userEntity) {
-            throw new \InvalidArgumentException(\sprintf('User with id %d was not found in the database!', $userId));
+            throw new InvalidArgumentException(sprintf('User with id %d was not found in the database!', $userId));
         }
 
         $resourceToFetch = FetchRemoteData::RESOURCE_POSTS.(null !== $userId ? 'user/'.$userId : '');
 
-        $posts = ($this->fetchRemoteData)($resourceToFetch);
+        $posts = $this->remoteApi->fetchData($resourceToFetch);
         $numberOfPostsInserted = 0;
 
         foreach ($posts as $post) {
             if (
-                0 === \strlen($post['title']) &&
-                0 === \strlen($post['body'])
+                0 === strlen($post['title']) &&
+                0 === strlen($post['body'])
             ) {
                 continue;
             }

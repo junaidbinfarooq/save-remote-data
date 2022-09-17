@@ -8,6 +8,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use function sprintf;
 
 #[AsCommand(
     name: 'save-remote-users',
@@ -36,7 +37,7 @@ class SaveRemoteUsersCommand extends Command
             $io->note('No user was imported!');
         } else {
             $io->success(
-                \sprintf('%d users imported into the database successfully!', $numberOfUsersInserted)
+                sprintf('%d users imported into the database successfully!', $numberOfUsersInserted)
             );
         }
 

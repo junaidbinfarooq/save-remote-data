@@ -10,11 +10,14 @@ use App\Repository\AddressRepository;
 use App\Repository\BankRepository;
 use App\Repository\HairRepository;
 use App\Repository\UserRepository;
+use DateTime;
+use function count;
+use function strlen;
 
 final class SaveUsers
 {
     public function __construct(
-        private readonly FetchRemoteData   $fetchRemoteData,
+        private readonly RemoteApi         $remoteApi,
         private readonly UserRepository    $userRepository,
         private readonly AddressRepository $addressRepository,
         private readonly BankRepository    $bankRepository,
@@ -25,15 +28,15 @@ final class SaveUsers
 
     public function __invoke(): int
     {
-        $users = ($this->fetchRemoteData)(FetchRemoteData::RESOURCE_USERS);
+        $users = $this->remoteApi->fetchData(FetchRemoteData::RESOURCE_USERS);
         $numberOfUsersInserted = 0;
 
         foreach ($users as $user) {
             if (
-                0 === \strlen($user['firstName']) &&
-                0 === \strlen($user['lastName']) &&
-                0 === \strlen($user['username']) &&
-                0 === \strlen($user['email'])
+                0 === strlen($user['firstName']) &&
+                0 === strlen($user['lastName']) &&
+                0 === strlen($user['username']) &&
+                0 === strlen($user['email'])
             ) {
                 continue;
             }
@@ -62,14 +65,14 @@ final class SaveUsers
                 username: $user['username'],
                 email: $user['email'],
                 phone: $user['phone'],
-                birthDate: \DateTime::createFromFormat('Y-m-d', $user['birthDate']),
+                birthDate: DateTime::createFromFormat('Y-m-d', $user['birthDate']),
                 height: $user['height'],
                 weight: $user['weight'],
             );
             $userEntity->addAddress($addressEntity);
             $userEntity->setHair($hairEntity);
 
-            if (0 !== \count($user['bank'] ?? [])) {
+            if (0 !== count($user['bank'] ?? [])) {
                 $bankEntity = new Bank(
                     cardExpire: $user['bank']['cardExpire'] ?? '',
                     cardNumber: $user['bank']['cardNumber'] ?? '',

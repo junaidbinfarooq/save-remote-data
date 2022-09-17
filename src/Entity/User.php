@@ -100,4 +100,14 @@ class User
 
         $this->hair = $hair;
     }
+
+    public function getFirstName(): string
+    {
+        return $this->firstName;
+    }
+
+    public function getUsername(): string
+    {
+        return $this->username;
+    }
 }

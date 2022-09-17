@@ -9,6 +9,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use function sprintf;
 
 #[AsCommand(
     name: 'save-remote-posts',
@@ -44,7 +45,7 @@ class SaveRemotePostsCommand extends Command
             $io->note('No post was imported!');
         } else {
             $io->success(
-                \sprintf('%d posts imported into the database successfully!', $numberOfPostsInserted)
+                sprintf('%d posts imported into the database successfully!', $numberOfPostsInserted)
             );
         }
 

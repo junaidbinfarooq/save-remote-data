@@ -2,14 +2,19 @@
 
 namespace App\Service;
 
+use RuntimeException;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use function array_merge;
+use function count;
+use function strpos;
+use function substr;
 
-final class FetchRemoteData
+final class FetchRemoteData implements RemoteApi
 {
     public const BASE_URL = 'https://dummyjson.com/';
     public const RESOURCE_USERS = 'users/';
@@ -19,20 +24,20 @@ final class FetchRemoteData
     {
     }
 
-    public function __invoke(string $resourceUri): array
+    public function fetchData(string $resourceUri): array
     {
-        $resource = \substr($resourceUri, 0, \strpos($resourceUri, '/'));
+        $resource = substr($resourceUri, 0, strpos($resourceUri, '/'));
         $skip = 0;
         $responseData = $this->getRemoteData(self::BASE_URL.$resourceUri.'?limit=30&skip='.$skip);
 
         $data = [];
-        $data = \array_merge($data, $responseData[$resource] ?? []);
+        $data = array_merge($data, $responseData[$resource] ?? []);
 
-        while (\count($data) < ($responseData['total'] ?? 0)) {
+        while (count($data) < ($responseData['total'] ?? 0)) {
             $skip += 30;
 
             $responseData = $this->getRemoteData(self::BASE_URL.$resourceUri.'?limit=30&skip='.$skip);
-            $data = \array_merge($data, $responseData[$resource] ?? []);
+            $data = array_merge($data, $responseData[$resource] ?? []);
         }
 
         return $data;
@@ -54,7 +59,7 @@ final class FetchRemoteData
             RedirectionExceptionInterface |
             ServerExceptionInterface
         ) {
-            throw new \RuntimeException('Something went wrong while fetching remote data');
+            throw new RuntimeException('Something went wrong while fetching remote data');
         }
     }
 }
