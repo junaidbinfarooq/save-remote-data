@@ -2,23 +2,13 @@
 
 namespace App\Command;
 
-use App\Entity\User;
-use App\Service\FetchRemoteData;
 use App\Service\SavePosts;
-use App\Service\SaveUsers;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 #[AsCommand(
     name: 'save-remote-posts',
@@ -48,18 +38,7 @@ class SaveRemotePostsCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        try {
-            $numberOfPostsInserted = ($this->savePosts)($input->getArgument('user-id'));
-        } catch (
-            ClientExceptionInterface |
-            DecodingExceptionInterface |
-            RedirectionExceptionInterface |
-            ServerExceptionInterface |
-            TransportExceptionInterface) {
-            $io->error('Something went wrong while importing the data');
-
-            return Command::FAILURE;
-        }
+        $numberOfPostsInserted = ($this->savePosts)($input->getArgument('user-id'));
 
         if (0 === $numberOfPostsInserted) {
             $io->note('No post was imported!');

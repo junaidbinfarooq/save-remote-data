@@ -5,11 +5,6 @@ namespace App\Service;
 use App\Entity\Post;
 use App\Repository\PostRepository;
 use App\Repository\UserRepository;
-use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 final class SavePosts
 {
@@ -21,13 +16,6 @@ final class SavePosts
     {
     }
 
-    /**
-     * @throws TransportExceptionInterface
-     * @throws ServerExceptionInterface
-     * @throws RedirectionExceptionInterface
-     * @throws DecodingExceptionInterface
-     * @throws ClientExceptionInterface
-     */
     public function __invoke(?int $userId = null): int
     {
         $userEntity = null !== $userId ? $this->userRepository->find($userId) : null;
@@ -38,7 +26,7 @@ final class SavePosts
 
         $resourceToFetch = FetchRemoteData::RESOURCE_POSTS.(null !== $userId ? 'user/'.$userId : '');
 
-        $posts = ($this->fetchRemoteData)($resourceToFetch)['posts'] ?? [];
+        $posts = ($this->fetchRemoteData)($resourceToFetch);
         $numberOfPostsInserted = 0;
 
         foreach ($posts as $post) {

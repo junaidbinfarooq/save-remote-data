@@ -10,11 +10,6 @@ use App\Repository\AddressRepository;
 use App\Repository\BankRepository;
 use App\Repository\HairRepository;
 use App\Repository\UserRepository;
-use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 final class SaveUsers
 {
@@ -28,16 +23,9 @@ final class SaveUsers
     {
     }
 
-    /**
-     * @throws TransportExceptionInterface
-     * @throws ServerExceptionInterface
-     * @throws RedirectionExceptionInterface
-     * @throws DecodingExceptionInterface
-     * @throws ClientExceptionInterface
-     */
     public function __invoke(): int
     {
-        $users = ($this->fetchRemoteData)(FetchRemoteData::RESOURCE_USERS)['users'];
+        $users = ($this->fetchRemoteData)(FetchRemoteData::RESOURCE_USERS);
         $numberOfUsersInserted = 0;
 
         foreach ($users as $user) {

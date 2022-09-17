@@ -67,8 +67,7 @@ final class Version20220916151617 extends AbstractMigration
                     body LONGTEXT NOT NULL,
                     reactions INT NULL DEFAULT 0,
                     INDEX IDX_5A8A6C8DA76ED395 (user_id),
-                    PRIMARY KEY(id),
-                    UNIQUE(title)
+                    PRIMARY KEY(id)
                 ) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB;
             SQL
         );
@@ -114,13 +113,13 @@ final class Version20220916151617 extends AbstractMigration
 
     public function down(Schema $schema): void
     {
-        $this->addSql('ALTER TABLE addresses DROP FOREIGN KEY FK_D4E6F81A76ED395');
-        $this->addSql('ALTER TABLE hairs DROP FOREIGN KEY FK_9CF76119A76ED395');
-        $this->addSql('ALTER TABLE posts DROP FOREIGN KEY FK_5A8A6C8DA76ED395');
-        $this->addSql('DROP TABLE addresses');
-        $this->addSql('DROP TABLE banks');
-        $this->addSql('DROP TABLE hairs');
-        $this->addSql('DROP TABLE posts');
-        $this->addSql('DROP TABLE users');
+        $this->addSql('ALTER TABLE addresses DROP FOREIGN KEY FK_D4E6F81A76ED395;');
+        $this->addSql('ALTER TABLE hairs DROP FOREIGN KEY FK_9CF76119A76ED395;');
+        $this->addSql('ALTER TABLE posts DROP FOREIGN KEY FK_5A8A6C8DA76ED395;');
+        $this->addSql('DROP TABLE addresses;');
+        $this->addSql('DROP TABLE banks;');
+        $this->addSql('DROP TABLE hairs;');
+        $this->addSql('DROP TABLE posts;');
+        $this->addSql('DROP TABLE users;');
     }
 }

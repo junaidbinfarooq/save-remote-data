@@ -19,20 +19,42 @@ final class FetchRemoteData
     {
     }
 
-    /**
-     * @throws RedirectionExceptionInterface
-     * @throws DecodingExceptionInterface
-     * @throws ClientExceptionInterface
-     * @throws TransportExceptionInterface
-     * @throws ServerExceptionInterface
-     */
-    public function __invoke(string $resource): array
+    public function __invoke(string $resourceUri): array
     {
-        $response = $this->httpClient->request(
-            'GET',
-            self::BASE_URL.$resource,
-        );
+        $resource = \substr($resourceUri, 0, \strpos($resourceUri, '/'));
+        $skip = 0;
+        $responseData = $this->getRemoteData(self::BASE_URL.$resourceUri.'?limit=30&skip='.$skip);
 
-        return $response->toArray();
+        $data = [];
+        $data = \array_merge($data, $responseData[$resource] ?? []);
+
+        while (\count($data) < ($responseData['total'] ?? 0)) {
+            $skip += 30;
+
+            $responseData = $this->getRemoteData(self::BASE_URL.$resourceUri.'?limit=30&skip='.$skip);
+            $data = \array_merge($data, $responseData[$resource] ?? []);
+        }
+
+        return $data;
+    }
+
+    private function getRemoteData(string $resource): array
+    {
+        try {
+            $response = $this->httpClient->request(
+                'GET',
+                $resource,
+            );
+
+            return $response->toArray();
+        } catch (
+            TransportExceptionInterface |
+            ClientExceptionInterface |
+            DecodingExceptionInterface |
+            RedirectionExceptionInterface |
+            ServerExceptionInterface
+        ) {
+            throw new \RuntimeException('Something went wrong while fetching remote data');
+        }
     }
 }
