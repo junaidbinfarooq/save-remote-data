@@ -6,6 +6,7 @@ use App\Repository\BankRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: BankRepository::class)]
+#[ORM\Table(name: 'banks')]
 class Bank
 {
     #[ORM\Id]
@@ -13,38 +14,27 @@ class Bank
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $cardExpire = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $cardNumber = null;
-
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getCardExpire(): ?string
+    public function __construct(
+        #[ORM\Column(name: 'card_expire', length: 5)]
+        private string $cardExpire,
+
+        #[ORM\Column(name: 'card_number', length: 16)]
+        private string $cardNumber,
+
+        #[ORM\Column(name: 'card_type', length: 10)]
+        private string $cardType,
+
+        #[ORM\Column(length: 10)]
+        private string $currency,
+
+        #[ORM\Column(length: 50)]
+        private string $iban,
+    )
     {
-        return $this->cardExpire;
-    }
-
-    public function setCardExpire(string $cardExpire): self
-    {
-        $this->cardExpire = $cardExpire;
-
-        return $this;
-    }
-
-    public function getCardNumber(): ?string
-    {
-        return $this->cardNumber;
-    }
-
-    public function setCardNumber(string $cardNumber): self
-    {
-        $this->cardNumber = $cardNumber;
-
-        return $this;
     }
 }

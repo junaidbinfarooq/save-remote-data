@@ -18,18 +18,15 @@ use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 #[AsCommand(
-    name: 'fetch-remote-users',
+    name: 'save-remote-users',
     description: 'Fetches users from a remote api and saves them to a database',
 )]
-class FetchRemoteUsersCommand extends Command
+class SaveRemoteUsersCommand extends Command
 {
     public function __construct(
-        private readonly FetchUsers $fetchUsers,
         private readonly SaveUsers $saveUsers,
-        private readonly EntityManagerInterface $entityManager,
     )
     {
         parent::__construct();
@@ -39,23 +36,24 @@ class FetchRemoteUsersCommand extends Command
     {
     }
 
-    /**
-     * @throws TransportExceptionInterface
-     * @throws ServerExceptionInterface
-     * @throws RedirectionExceptionInterface
-     * @throws DecodingExceptionInterface
-     * @throws ClientExceptionInterface
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
-        $users = ($this->fetchUsers)();
-        ($this->saveUsers)($users);
-        $this->entityManager->flush();
+        try {
+            ($this->saveUsers)();
+        } catch (
+            ClientExceptionInterface |
+            DecodingExceptionInterface |
+            RedirectionExceptionInterface |
+            ServerExceptionInterface |
+            TransportExceptionInterface) {
+            $io->error('Something went wrong while importing the data');
 
+            return Command::FAILURE;
+        }
 
-        $io->success('You have a new command! Now make it your own! Pass --help to see your options.');
+        $io->success('User data imported into the database successfully!');
 
         return Command::SUCCESS;
     }

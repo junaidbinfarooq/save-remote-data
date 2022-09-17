@@ -6,37 +6,95 @@ use App\Entity\Address;
 use App\Entity\Bank;
 use App\Entity\Hair;
 use App\Entity\User;
+use App\Repository\AddressRepository;
+use App\Repository\BankRepository;
+use App\Repository\HairRepository;
 use App\Repository\UserRepository;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 final class SaveUsers
 {
-    public function __construct(private UserRepository $userRepository)
+    public function __construct(
+        private readonly FetchUsers $fetchUsers,
+        private readonly UserRepository $userRepository,
+        private readonly AddressRepository $addressRepository,
+        private readonly BankRepository $bankRepository,
+        private readonly HairRepository $hairRepository,
+    )
     {
     }
 
-    public function __invoke(array $userData): void
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
+     */
+    public function __invoke(): void
     {
-        foreach ($userData as $user) {
-            $addressEntity = new Address();
-            $addressEntity->setAddress($user['address']['address'] ?? '');
-            $addressEntity->setCity($user['address']['city'] ?? '');
+        $users = ($this->fetchUsers)();
 
-            $hairEntity = new Hair();
-            $hairEntity->setColor($user['hair']['color'] ?? '');
-            $hairEntity->setColor($user['hair']['type'] ?? '');
+        foreach ($users as $user) {
+            if (
+                0 === \strlen($user['firstName']) &&
+                0 === \strlen($user['lastName']) &&
+                0 === \strlen($user['username']) &&
+                0 === \strlen($user['email'])
+            ) {
+                continue;
+            }
 
-            $userEntity = new User();
+            $addressEntity = new Address(
+                address: $user['address']['address'] ?? '',
+                city: $user['address']['city'] ?? '',
+                postalCode: $user['address']['postalCode'] ?? '',
+                state: $user['address']['state'] ?? '',
+            );
+
+            $this->addressRepository->add($addressEntity);
+
+            $hairEntity = new Hair(
+                color: $user['hair']['color'] ?? '',
+                type: $user['hair']['type'] ?? '',
+            );
+
+            $this->hairRepository->add($hairEntity);
+
+            $userEntity = new User(
+                firstName: $user['firstName'],
+                lastName: $user['lastName'],
+                username: $user['username'],
+                email: $user['email'],
+                phone: $user['phone'],
+                birthDate: \DateTime::createFromFormat('Y-m-d', $user['birthDate']),
+                height: $user['height'],
+                weight: $user['weight'],
+            );
             $userEntity->addAddress($addressEntity);
             $userEntity->setHair($hairEntity);
 
             if (0 !== \count($user['bank'] ?? [])) {
-                $bankEntity = new Bank();
-                $bankEntity->setCardExpire($user['bank']['cardExpire']);
-                $bankEntity->setCardNumber($user['bank']['cardNumber']);
+                $bankEntity = new Bank(
+                    cardExpire: $user['bank']['cardExpire'] ?? '',
+                    cardNumber: $user['bank']['cardNumber'] ?? '',
+                    cardType: $user['bank']['cardType'] ?? '',
+                    currency: $user['bank']['currency'] ?? '',
+                    iban: $user['bank']['iban'] ?? '',
+                );
+
                 $userEntity->addBank($bankEntity);
+
+                $this->bankRepository->add($bankEntity);
             }
 
             $this->userRepository->add($userEntity);
         }
+
+        $this->userRepository->save();
     }
 }

@@ -6,6 +6,7 @@ use App\Repository\HairRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: HairRepository::class)]
+#[ORM\Table(name: 'hairs')]
 class Hair
 {
     #[ORM\Id]
@@ -13,42 +14,17 @@ class Hair
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 20)]
-    private ?string $color = null;
-
-    #[ORM\Column(length: 20)]
-    private ?string $type = null;
-
     #[ORM\OneToOne(inversedBy: 'hair', cascade: ['persist', 'remove'])]
     private ?User $user = null;
 
-    public function getId(): ?int
+    public function __construct(
+        #[ORM\Column(length: 20)]
+        private ?string $color = null,
+
+        #[ORM\Column(length: 20)]
+        private ?string $type = null,
+    )
     {
-        return $this->id;
-    }
-
-    public function getColor(): ?string
-    {
-        return $this->color;
-    }
-
-    public function setColor(string $color): self
-    {
-        $this->color = $color;
-
-        return $this;
-    }
-
-    public function getType(): ?string
-    {
-        return $this->type;
-    }
-
-    public function setType(string $type): self
-    {
-        $this->type = $type;
-
-        return $this;
     }
 
     public function getUser(): ?User

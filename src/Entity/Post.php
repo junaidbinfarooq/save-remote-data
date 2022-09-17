@@ -7,18 +7,13 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PostRepository::class)]
+#[ORM\Table(name: 'posts')]
 class Post
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $title = null;
-
-    #[ORM\Column(type: Types::TEXT)]
-    private ?string $body = null;
 
     #[ORM\ManyToOne(inversedBy: 'posts')]
     #[ORM\JoinColumn(nullable: false)]
@@ -29,39 +24,21 @@ class Post
         return $this->id;
     }
 
-    public function getTitle(): ?string
+    public function __construct(
+        #[ORM\Column(length: 255)]
+        private ?string $title = null,
+
+        #[ORM\Column(type: Types::TEXT)]
+        private ?string $body = null,
+
+        #[ORM\Column(type: Types::INTEGER, nullable: true)]
+        private ?int $reactions = 0,
+    )
     {
-        return $this->title;
-    }
-
-    public function setTitle(string $title): self
-    {
-        $this->title = $title;
-
-        return $this;
-    }
-
-    public function getBody(): ?string
-    {
-        return $this->body;
-    }
-
-    public function setBody(string $body): self
-    {
-        $this->body = $body;
-
-        return $this;
-    }
-
-    public function getUser(): ?User
-    {
-        return $this->user;
     }
 
     public function setUser(?User $user): self
     {
         $this->user = $user;
-
-        return $this;
     }
 }
