@@ -4,7 +4,7 @@ An app to save remote data locally using custom Symfony commands
 ## Installation
 
 First clone this repository, and install the dependencies.
-For demo purpose, `.env.example` already has the required database information that the underlying orm makes use of.
+For demo purpose, `.env.example` already has the required information to run the app.
 This app uses _users_db_ and _users_db_test_ databases for app functionality and testing respectively.
 
 ```bash
