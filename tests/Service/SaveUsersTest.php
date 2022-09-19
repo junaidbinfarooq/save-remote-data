@@ -94,23 +94,6 @@ class SaveUsersTest extends KernelTestCase
                 "birthDate" => "2000-12-25",
                 "height" => 189,
                 "weight" => 75.4,
-                "hair" => [
-                    "color" => "Black",
-                    "type" => "Strands",
-                ],
-                "address" => [
-                    "address" => "1745 T Street Southeast",
-                    "city" => "Washington",
-                    "postalCode" => "20020",
-                    "state" => "DC",
-                ],
-                "bank" => [
-                    "cardExpire" => "06/22",
-                    "cardNumber" => "50380955204220685",
-                    "cardType" => "maestro",
-                    "currency" => "Peso",
-                    "iban" => "NO17 0695 2754 967",
-                ],
             ],
         ];
     }

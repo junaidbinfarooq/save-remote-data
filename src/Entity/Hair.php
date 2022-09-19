@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\HairRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: HairRepository::class)]
 #[ORM\Table(name: 'hairs')]
@@ -18,9 +19,11 @@ class Hair
     private ?User $user = null;
 
     public function __construct(
+        #[Assert\NotBlank]
         #[ORM\Column(length: 20)]
         private ?string $color = null,
 
+        #[Assert\NotBlank]
         #[ORM\Column(length: 20)]
         private ?string $type = null,
     )

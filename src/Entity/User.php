@@ -7,7 +7,12 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
+#[UniqueEntity(fields: ['firstName', 'lastName'], message: 'The combination of first name and last name cannot be duplicate')]
+#[UniqueEntity(fields: 'username', message: 'No two users could have the same username')]
+#[UniqueEntity(fields: 'email', message: 'No two users could have the same email')]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: 'users')]
 class User
@@ -30,16 +35,20 @@ class User
     private ?Hair $hair = null;
 
     public function __construct(
+        #[Assert\NotBlank]
         #[ORM\Column(name: 'first_name', length: 255)]
         private string $firstName,
 
+        #[Assert\NotBlank]
         #[ORM\Column(name: 'last_name', length: 255)]
         private string $lastName,
 
-        #[ORM\Column(length: 50)]
+        #[Assert\NotBlank]
+        #[ORM\Column(length: 50, unique: true)]
         private string $username,
 
-        #[ORM\Column(length: 20)]
+        #[Assert\NotBlank]
+        #[ORM\Column(length: 20, unique: true)]
         private string $email,
 
         #[ORM\Column(length: 20)]

@@ -40,7 +40,8 @@ final class Version20220916151617 extends AbstractMigration
                     card_type VARCHAR(10) NOT NULL,
                     currency VARCHAR(10) NOT NULL,
                     iban VARCHAR(50) NOT NULL,
-                    PRIMARY KEY(id)
+                    PRIMARY KEY(id),
+                    UNIQUE(card_number)
                 ) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB;
             SQL
         );
@@ -64,7 +65,7 @@ final class Version20220916151617 extends AbstractMigration
                     id INT AUTO_INCREMENT NOT NULL,
                     user_id INT NOT NULL,
                     title VARCHAR(255) NOT NULL,
-                    body LONGTEXT NOT NULL,
+                    body LONGTEXT NULL,
                     reactions INT NULL DEFAULT 0,
                     INDEX IDX_5A8A6C8DA76ED395 (user_id),
                     PRIMARY KEY(id)
@@ -86,6 +87,7 @@ final class Version20220916151617 extends AbstractMigration
                     weight DECIMAL(5, 2) NULL,
                     PRIMARY KEY(id),
                     UNIQUE(first_name, last_name),
+                    UNIQUE(username),
                     UNIQUE(email)
                 ) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB;
             SQL
